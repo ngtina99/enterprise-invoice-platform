@@ -1,0 +1,27 @@
+# .NET build files
+**/bin/
+**/obj/
+
+# Vue / Node
+**/node_modules/
+**/dist/
+
+# Local database files
+**/*.db
+**/*.db-shm
+**/*.db-wal
+
+# Local secrets and environment configuration
+**/.env
+**/.env.*
+!**/.env.example
+**/appsettings.Development.json
+**/secrets.json
+
+# IDE and operating system files
+.vs/
+.idea/
+.DS_Store
+
+# Logs
+*.log
