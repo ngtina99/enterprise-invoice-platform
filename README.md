@@ -1,4 +1,4 @@
-# Invoice Management Webapp
+# Invoice Management Web Application
 
 A full-stack invoice management portfolio project built with ASP.NET Core, Vue 3, Entity Framework Core and SQLite. Invoices and status changes are saved in SQLite and remain available after restarting the application.
 
