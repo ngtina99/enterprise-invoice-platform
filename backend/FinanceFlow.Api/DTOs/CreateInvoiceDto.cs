@@ -27,7 +27,13 @@ public class CreateInvoiceDto
 
     // Az összegnek 0,01 és 999 999 999 999 között kell lennie.
     // A typeof(decimal) megadja, hogy decimal típusú értéket ellenőrzünk.
-    [Range(typeof(decimal), "0.01", "999999999999")]
+    [Range(
+        typeof(decimal),
+        "0.01",
+        "999999999999.99",
+        ParseLimitsInInvariantCulture = true,
+        ErrorMessage = "Amount must be greater than zero."
+    )]
     public decimal Amount { get; set; }
 
 

@@ -1,23 +1,33 @@
+using FinanceFlow.Api.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Register API controllers.
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+// Register the database context in dependency injection.
+// SQLite stores the data in a local file named financeflow.db.
+// No Azure account, SQL Server, username, or password is required.
+builder.Services.AddDbContext<FinanceFlowDbContext>(options =>
+    options.UseSqlite("Data Source=financeflow.db"));
+
+// Register OpenAPI services.
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Enable the OpenAPI document in development.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-
+// Configure the HTTP request pipeline.
+// app.UseHttpsRedirection();
 app.UseAuthorization();
 
+// Map controller endpoints, such as /api/invoices.
 app.MapControllers();
 
 app.Run();
