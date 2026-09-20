@@ -1,10 +1,10 @@
-# FinanceFlow Enterprise
+# Invoice Management Webapp
 
-A full-stack invoice management portfolio project built with ASP.NET Core, Vue 3, Entity Framework Core and SQLite.
+A full-stack invoice management portfolio project built with ASP.NET Core, Vue 3, Entity Framework Core and SQLite. Invoices and status changes are saved in SQLite and remain available after restarting the application.
 
 ## Overview
 
-FinanceFlow Enterprise is a small invoice management application that demonstrates a complete workflow from the frontend to the backend and database.
+This is a small invoice management application that demonstrates a complete workflow from the frontend to the backend and database.
 
 Users can:
 - View supplier invoices.
@@ -122,6 +122,13 @@ Open the URL displayed by Vite, usually:
 `http://localhost:5173`
 
 Both applications must be running for the complete workflow.
+
+### Frontend production build
+
+```bash
+cd frontend
+npm run build
+```
 
 ## Testing
 

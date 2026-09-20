@@ -2,10 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FinanceFlow.Api.DTOs;
 
-// Defines the data the client sends when updating an invoice status.
+// Require a status value; the controller checks and normalizes supported values.
 public class UpdateInvoiceStatusDto
 {
-    // Required: the client must provide a status.
     [Required(ErrorMessage = "Status is required.")]
     public string Status { get; set; } = string.Empty;
 }

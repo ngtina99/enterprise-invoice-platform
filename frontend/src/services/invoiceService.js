@@ -1,100 +1,42 @@
-// This file contains the HTTP requests used by Vue frontend.
-//
-// The '/api' prefix is forwarded to ASP.NET Core by the proxy configured in vite.config.js.
-
 const API_URL = '/api/invoices'
 
-
-// Read an error response from the backend.
-//
-// ASP.NET Core may return:
-// - a JSON object with a "message" property,
-// - validation errors,
-// - or an empty response.
-//
-// This helper gives the user a useful error message.
-async function getErrorMessage(response) {
-  const fallback = `Request failed: HTTP ${response.status}`
-
+// Preserve field validation details while providing a readable fallback for other failures.
+async function getApiError(response) {
+  let data
   try {
-    const data = await response.json()
-
-    if (data.message) {
-      return data.message
-    }
-
-    if (data.errors) {
-      return Object.values(data.errors)
-        .flat()
-        .join(' ')
-    }
-
-    if (data.title) {
-      return data.title
-    }
+    data = await response.json()
   } catch {
-    // The response was not JSON.
+    // Empty or non-JSON bodies fall back to the HTTP status.
   }
-
-  return fallback
+  const message = data?.message || (data?.errors && Object.values(data.errors).flat().join(' '))
+    || data?.title || `Request failed: HTTP ${response.status}`
+  const error = new Error(message)
+  error.fieldErrors = data?.errors || {}
+  return error
 }
 
-
-// GET /api/invoices
-//
-// Retrieve all invoices from ASP.NET Core.
-export async function getInvoices() {
-  const response = await fetch(API_URL)
-
-  if (!response.ok) {
-    throw new Error(await getErrorMessage(response))
+async function requestInvoice(path = '', method = 'GET', body) {
+  const options = { method }
+  if (body !== undefined) {
+    options.headers = { 'Content-Type': 'application/json' }
+    options.body = JSON.stringify(body)
   }
-
-  return await response.json()
+  const response = await fetch(`${API_URL}${path}`, options)
+  if (!response.ok) throw await getApiError(response)
+  return response.json()
 }
 
-
-// POST /api/invoices
-//
-// Create a new invoice.
-export async function createInvoice(invoice) {
-  const response = await fetch(API_URL, {
-    method: 'POST',
-
-    headers: {
-      'Content-Type': 'application/json',
-    },
-
-    body: JSON.stringify(invoice),
-  })
-
-  if (!response.ok) {
-    throw new Error(await getErrorMessage(response))
-  }
-
-  return await response.json()
+// Fetch all invoices and surface API errors to the caller.
+export function getInvoices() {
+  return requestInvoice()
 }
 
+// Send invoice form data and return the saved invoice.
+export function createInvoice(invoice) {
+  return requestInvoice('', 'POST', invoice)
+}
 
-// PATCH /api/invoices/{id}/status
-//
-// Update an existing invoice's status.
-export async function updateInvoiceStatus(id, status) {
-  const response = await fetch(`${API_URL}/${id}/status`, {
-    method: 'PATCH',
-
-    headers: {
-      'Content-Type': 'application/json',
-    },
-
-    body: JSON.stringify({
-      status: status,
-    }),
-  })
-
-  if (!response.ok) {
-    throw new Error(await getErrorMessage(response))
-  }
-
-  return await response.json()
+// Patch only the invoice status and return the updated invoice.
+export function updateInvoiceStatus(id, status) {
+  return requestInvoice(`/${id}/status`, 'PATCH', { status })
 }
